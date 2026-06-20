@@ -492,38 +492,7 @@ jobs:
           echo "📋 国内限额消息速览"
           echo "=========================================="
           pip install requests -q 2>/dev/null
-          python3 << 'PYEOF_SEARCH'
-import requests, json, os
-api_key = os.environ.get('TAVILY_API_KEY', '')
-headers = {'Content-Type': 'application/json'}
-queries = [
-    'A股 跨境投资 额度 限额 最新消息',
-    'QDII 额度 限制',
-    '外汇 资本流动 限制 额度',
-]
-for q in queries:
-    print(f'\n🔍 搜索: {q}')
-    try:
-        resp = requests.post(
-            'https://api.tavily.com/search',
-            json={'api_key': api_key, 'query': q, 'search_depth': 'basic', 'max_results': 3},
-            headers=headers, timeout=10
-        )
-        if resp.status_code == 200:
-            results = resp.json().get('results', [])
-            for r in results:
-                title = r.get('title', '')
-                url = r.get('url', '')
-                txt = r.get('content', '')[:200]
-                print(f'  - [{title}]({url})')
-                if txt:
-                    print(f'    {txt}')
-        else:
-            print(f'  (搜索出错: {resp.status_code})')
-    except Exception as e:
-        print(f'  (搜索失败: {e})')
-PYEOF_SEARCH
-          fi
+          python3 scripts/search_domestic_quotas.py
 
       - name: 显示运行结果
         if: always()
